@@ -309,7 +309,7 @@ protected
 
           # if the file does not exist locally, try to grab the remote reference
           if link_uri.nil? or not File.exists?(link_uri)
-            link_uri = Premailer.resolve_link(tag.attributes['href'].to_s, @html_file)
+            link_uri = Premailer.resolve_link(tag.attributes['href'].to_s)
           end
 
           if Premailer.local_data?(link_uri)
@@ -464,7 +464,7 @@ public
   end
 
   # @private
-  def self.resolve_link(path, base_path) # :nodoc:
+  def self.resolve_link(path, base_path = nil) # :nodoc:
     path.strip!
     resolved = nil
     if path =~ /(http[s]?|ftp):\/\//i
@@ -477,7 +477,7 @@ public
       resolved = URI.parse(base_path)
       resolved = resolved.merge(path)
       Premailer.canonicalize(resolved)
-    else
+    elsif base_path
       File.expand_path(path, File.dirname(base_path))
     end
   end
