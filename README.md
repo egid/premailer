@@ -14,17 +14,6 @@ script is my solution.
   - Based on the Email Standards Project's guides
 * A plain text version is created (optional)
 
-## Premailer 2.0 is coming
-
-I'm looking for input on a version 2.0 update to Premailer.  PLease visit the [Premailer 2.0 Planning Page](https://github.com/alexdunae/premailer/wiki/Premailer-2.0-Planning) and give me your feedback.
-
-## Installation
-
-Download the Premailer gem from RubyGems.
-
-```bash
-gem install premailer
-```
 
 ## Example
 
