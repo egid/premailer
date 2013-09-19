@@ -291,7 +291,12 @@ protected
 
     # Load CSS included in <tt>style</tt> and <tt>link</tt> tags from an HTML document.
   def load_css_from_html! # :nodoc:
-    if tags = @doc.search("link[@rel='stylesheet'], style")
+    if (@adapter_class == 'Nokogiri')
+      tags = @doc.search("link[@rel='stylesheet']", "//style[not(contains(@data-premailer,'ignore'))]")
+    else
+      tags = @doc.search("link[@rel='stylesheet'], style:not([@data-premailer='ignore'])")
+    end
+    if tags
       tags.each do |tag|
         if tag.to_s.strip =~ /^\<link/i && tag.attributes['href'] && media_type_ok?(tag.attributes['media']) && @options[:include_link_tags]
           # A user might want to <link /> to a local css file that is also mirrored on the site
@@ -303,7 +308,7 @@ protected
 
           # if the file does not exist locally, try to grab the remote reference
           if link_uri.nil? or not File.exists?(link_uri)
-            link_uri = Premailer.resolve_link(tag.attributes['href'].to_s, @html_file)
+            link_uri = Premailer.resolve_link(tag.attributes['href'].to_s)
           end
 
           if Premailer.local_data?(link_uri)
@@ -457,7 +462,7 @@ public
   end
 
   # @private
-  def self.resolve_link(path, base_path) # :nodoc:
+  def self.resolve_link(path, base_path = nil) # :nodoc:
     path.strip!
     resolved = nil
     if path =~ /\A(?:(https?|ftp|file):)\/\//i
@@ -470,7 +475,7 @@ public
       resolved = URI.parse(base_path)
       resolved = resolved.merge(path)
       Premailer.canonicalize(resolved)
-    else
+    elsif base_path
       File.expand_path(path, File.dirname(base_path))
     end
   end
